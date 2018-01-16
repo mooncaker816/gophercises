@@ -1,0 +1,6 @@
+- path: /a
+  url: http://www.baidu.com
+- path: /b
+  url: http://www.taobao.com
+- path: /c
+  url: http://www.qq.com
