@@ -147,7 +147,7 @@ func New(opts ...Option) Deck {
 	return deck
 }
 
-func absRank1(c Card) int {
+func AbsRank1(c Card) int {
 	if c.Suit == Joker {
 		return 52 + int(c.Rank)
 	}
@@ -163,7 +163,7 @@ func absRank2(c Card) int {
 
 func less1(deck Deck) func(i, j int) bool {
 	return func(i, j int) bool {
-		return absRank1(deck[i]) > absRank1(deck[j])
+		return AbsRank1(deck[i]) > AbsRank1(deck[j])
 	}
 }
 
@@ -221,4 +221,13 @@ func Multiple(n int) Option {
 			*deck = append(*deck, base...)
 		}
 	}
+}
+
+// DealOneEndless will deal one card from the current deck, once current deck is empty, deck will be refreshed and continue dealing
+func DealOneEndless(deck *Deck) (card Card) {
+	if len(*deck) <= 0 {
+		*deck = New(Shuffle)
+	}
+	card, *deck = (*deck)[0], (*deck)[1:]
+	return card
 }
