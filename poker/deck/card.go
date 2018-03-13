@@ -8,8 +8,7 @@ import (
 
 // Suit values
 const (
-	_ Suit = iota
-	Diamond
+	Diamond Suit = iota
 	Club
 	Heart
 	Spade
@@ -99,10 +98,10 @@ type Card struct {
 }
 
 // BigJoker is a special card of big joker
-var BigJoker = Card{Joker, Rank(15)}
+var BigJoker = Card{Joker, Rank(2)}
 
 // LittleJoker is a special card of little joker
-var LittleJoker = Card{Joker, Rank(14)}
+var LittleJoker = Card{Joker, Rank(1)}
 
 func (c Card) String() string {
 	if c == BigJoker {
@@ -149,11 +148,17 @@ func New(opts ...Option) Deck {
 }
 
 func absRank1(c Card) int {
+	if c.Suit == Joker {
+		return 52 + int(c.Rank)
+	}
 	return int(c.Suit)*13 + int(c.Rank)
 }
 
 func absRank2(c Card) int {
-	return int(c.Rank)*4 + int(c.Suit)
+	if c.Suit == Joker {
+		return 52 + int(c.Rank)
+	}
+	return int(c.Rank-1)*4 + int(c.Suit)
 }
 
 func less1(deck Deck) func(i, j int) bool {
