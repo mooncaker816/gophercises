@@ -1,7 +1,10 @@
 package room
 
 import (
+	"fmt"
 	"strings"
+
+	"github.com/veandco/go-sdl2/sdl"
 
 	"github.com/mooncaker816/gophercises/poker/deck"
 )
@@ -21,8 +24,27 @@ type Player struct {
 }
 
 // NewPlayer will create a new player
-func NewPlayer(id int, name string, pos int, h *Hand, f int) *Player {
-	return &Player{ID: id, Name: name, Pos: pos, Hand: h, Config: f}
+func NewPlayer(id int, name string, pos int, h *Hand, f int) (*Player, error) {
+	return &Player{ID: id, Name: name, Pos: pos, Hand: h, Config: f}, nil
+}
+
+func (p Player) paint(r *sdl.Renderer, s *Scene) error {
+	num := len(*p.Hand)
+	leftBase := 400 - (138+30*num-1)/2
+	for i, absrank := range p.Hand.C2Rs() {
+		rect := &sdl.Rect{X: int32(i*30 + leftBase), Y: int32(300*p.Pos + (300-200)/2), W: 138, H: 200}
+		if p.Config&HIDE_FIRST_CARD == 1 && i == 0 && s.Table.result == nil {
+			absrank = 0
+		}
+		if err := r.Copy(s.cards[absrank], nil, rect); err != nil {
+			return fmt.Errorf("could not copy card texture: %v", err)
+		}
+	}
+	return nil
+}
+
+func (p Player) Hit(r *sdl.Renderer, s *Scene) {
+	*p.Hand = append(*p.Hand, deck.DealOneEndless(s.Table.Deck))
 }
 
 // Hand holds the current cards of a player
